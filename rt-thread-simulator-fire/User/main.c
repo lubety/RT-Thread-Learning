@@ -75,6 +75,9 @@ int main(void)
 	/* 将线程插入到就绪表 */
 	rt_list_insert_before(&(rt_thread_priority_table[1]), &(rt_flag2_thread.tlist));
 	
+
+	/* 启动系统调度器 */
+	rt_system_schedule_start();
 	
 	return 0;
 }
