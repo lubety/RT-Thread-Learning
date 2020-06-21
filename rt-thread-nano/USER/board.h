@@ -5,6 +5,7 @@
 #include "stm32f10x.h"
 #include "led.h"
 #include "usart.h"
+#include "key.h"
 
 
 void rt_hw_board_init(void);

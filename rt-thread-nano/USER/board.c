@@ -75,6 +75,7 @@ void rt_hw_board_init()
 	SysTick_Config(SystemCoreClock / RT_TICK_PER_SECOND);
 	
 	LED_Init();
+	KEY_Init();
 	uart_init(115200);
 	
 
