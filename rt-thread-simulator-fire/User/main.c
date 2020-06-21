@@ -51,12 +51,19 @@ int main(void)
 	/* 硬件初始化 */
 	/* 将硬件相关的初始化放在这里，如果是软件仿真，则没有相关初始化代码 */
 	
+	/* 调度器初始化 */
+	rt_system_schedule_init();
+
 	/* 初始化线程 */
 	rt_thread_init(&rt_flag1_thread,
 					flag1_thread_entry,
 					RT_NULL,
 					&rt_flag1_thread_stack[0],
 					sizeof(rt_flag1_thread_stack));
+
+	/* 将线程插入到就绪表 */
+	rt_list_insert_before(&(rt_thread_priority_table[0]), &(rt_flag1_thread.tlist));
+
 	
 	/* 初始化线程 */
 	rt_thread_init(&rt_flag2_thread,
@@ -64,7 +71,13 @@ int main(void)
 					RT_NULL,
 					&rt_flag2_thread_stack[0],
 					sizeof(rt_flag2_thread_stack));
+
+	/* 将线程插入到就绪表 */
+	rt_list_insert_before(&(rt_thread_priority_table[1]), &(rt_flag2_thread.tlist));
 	
+
+	/* 启动系统调度器 */
+	rt_system_schedule_start();
 	
 	return 0;
 }

@@ -1,6 +1,15 @@
 
 #include <rtthread.h>
 
+/* 用于存储上一个线程的栈的 sp 的指针 */
+rt_uint32_t rt_interrupt_from_thread;
+
+/* 用于存储下一个将要运行的线程的栈的 sp 的指针 */
+rt_uint32_t rt_interrupt_to_thread;
+
+/* PendSV 中断服务函数执行标志 */
+rt_uint32_t rt_thread_switch_interrupt_flag;
+
 
 struct exception_stack_frame
 {
