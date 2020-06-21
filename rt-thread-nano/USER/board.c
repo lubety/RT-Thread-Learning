@@ -72,6 +72,11 @@ void rt_hw_board_init()
     /* System Tick Configuration */
     _SysTick_Config(SystemCoreClock / RT_TICK_PER_SECOND);
 #endif
+	SysTick_Config(SystemCoreClock / RT_TICK_PER_SECOND);
+	
+	LED_Init();
+	uart_init(115200);
+	
 
     /* Call components board initial (use INIT_BOARD_EXPORT()) */
 #ifdef RT_USING_COMPONENTS_INIT
@@ -93,3 +98,26 @@ void SysTick_Handler(void)
     /* leave interrupt */
     rt_interrupt_leave();
 }
+
+#define DEBUG_USARTx USART1
+
+void rt_hw_console_output(const char *str)
+{
+	rt_enter_critical();
+	
+	while(*str != '\0')
+	{
+		if(*str == '\n')
+		{
+			USART_SendData(DEBUG_USARTx, '\r');
+			while(USART_GetFlagStatus(DEBUG_USARTx, USART_FLAG_TXE) == RESET);
+		}
+		
+		USART_SendData(DEBUG_USARTx, *str++);
+		while(USART_GetFlagStatus(DEBUG_USARTx, USART_FLAG_TXE) == RESET);
+	}
+
+	rt_exit_critical();
+}
+
+
