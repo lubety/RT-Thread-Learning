@@ -1,6 +1,6 @@
 Dependencies for Project 'LED', Target 'LED': (DO NOT MODIFY !)
 CompilerVersion: 5060750::V5.06 update 6 (build 750)::.\ARMCC
-F (.\main.c)(0x5EEF740A)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I ..\USER -I ..\CORE -I ..\STM32F10x_FWLib\inc -I ..\HARDWARE -I ..\RT-Thread\3.1.3\include -I ..\RT-Thread\3.1.3\include\libc -I ..\RT-Thread\3.1.3\components\finsh-I.\RTE\_LED-ID:\Keil_v5\Packs\Keil\STM32F1xx_DFP\1.0.5\Device\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="530" -DSTM32F10X_HD -D_RTE_ -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\main.o --omf_browse ..\obj\main.crf --depend ..\obj\main.d)
+F (.\main.c)(0x5F033E92)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I ..\USER -I ..\CORE -I ..\STM32F10x_FWLib\inc -I ..\HARDWARE -I ..\RT-Thread\3.1.3\include -I ..\RT-Thread\3.1.3\include\libc -I ..\RT-Thread\3.1.3\components\finsh-I.\RTE\_LED-ID:\Keil_v5\Packs\Keil\STM32F1xx_DFP\1.0.5\Device\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="530" -DSTM32F10X_HD -D_RTE_ -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\main.o --omf_browse ..\obj\main.crf --depend ..\obj\main.d)
 I (board.h)(0x5EEF6548)
 I (stm32f10x.h)(0x4D783CB4)
 I (..\CORE\core_cm3.h)(0x4D523B58)
@@ -33,7 +33,7 @@ I (..\STM32F10x_FWLib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
 I (..\STM32F10x_FWLib\inc\misc.h)(0x4D783BB4)
 I (..\HARDWARE\led.h)(0x5EEF11E2)
 I (..\HARDWARE\usart.h)(0x5EEF1167)
-I (..\HARDWARE\key.h)(0x5EEF7137)
+I (..\HARDWARE\key.h)(0x5F033DC9)
 I (..\RT-Thread\3.1.3\include\rtthread.h)(0x5DC11BE2)
 I (..\USER\rtconfig.h)(0x5EEF0A47)
 I (..\RT-Thread\3.1.3\include\rtdebug.h)(0x5DC11BB8)
@@ -135,7 +135,7 @@ I (..\STM32F10x_FWLib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
 I (..\STM32F10x_FWLib\inc\misc.h)(0x4D783BB4)
 I (..\HARDWARE\led.h)(0x5EEF11E2)
 I (..\HARDWARE\usart.h)(0x5EEF1167)
-I (..\HARDWARE\key.h)(0x5EEF7137)
+I (..\HARDWARE\key.h)(0x5F033DC9)
 I (..\RT-Thread\3.1.3\include\rthw.h)(0x5DC11BE2)
 I (..\RT-Thread\3.1.3\include\rtthread.h)(0x5DC11BE2)
 I (..\USER\rtconfig.h)(0x5EEF0A47)
@@ -144,8 +144,8 @@ I (..\RT-Thread\3.1.3\include\rtdef.h)(0x5DC61FE0)
 I (D:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5E53505C)
 I (..\RT-Thread\3.1.3\include\rtservice.h)(0x5DC11BB8)
 I (..\RT-Thread\3.1.3\include\rtm.h)(0x5DC11BB8)
-F (..\HARDWARE\key.c)(0x5EEF6DB0)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I ..\USER -I ..\CORE -I ..\STM32F10x_FWLib\inc -I ..\HARDWARE -I ..\RT-Thread\3.1.3\include -I ..\RT-Thread\3.1.3\include\libc -I ..\RT-Thread\3.1.3\components\finsh-I.\RTE\_LED-ID:\Keil_v5\Packs\Keil\STM32F1xx_DFP\1.0.5\Device\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="530" -DSTM32F10X_HD -D_RTE_ -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\key.o --omf_browse ..\obj\key.crf --depend ..\obj\key.d)
-I (..\HARDWARE\key.h)(0x5EEF7137)
+F (..\HARDWARE\key.c)(0x5F033D6D)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I ..\USER -I ..\CORE -I ..\STM32F10x_FWLib\inc -I ..\HARDWARE -I ..\RT-Thread\3.1.3\include -I ..\RT-Thread\3.1.3\include\libc -I ..\RT-Thread\3.1.3\components\finsh-I.\RTE\_LED-ID:\Keil_v5\Packs\Keil\STM32F1xx_DFP\1.0.5\Device\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="530" -DSTM32F10X_HD -D_RTE_ -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\key.o --omf_browse ..\obj\key.crf --depend ..\obj\key.d)
+I (..\HARDWARE\key.h)(0x5F033DC9)
 I (..\USER\stm32f10x.h)(0x4D783CB4)
 I (..\CORE\core_cm3.h)(0x4D523B58)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5E53505C)

@@ -20,21 +20,15 @@ void KEY_Init(void) //IO≥ı ºªØ
 
 }
 
+
+
 u32 KEY_Read(void)
 {
 	u32 temp = 0;
 	
-	temp = ((~WK_UP)&0x01) << 3 | KEY2 << 2 | KEY1 << 1 | KEY0 << 0;
+	temp = (~(((~WK_UP)&0x01) << 3 | KEY2 << 2 | KEY1 << 1 | KEY0 << 0))&0x0F;
 	
 	return temp;
 }
-
-
-
-
-
-
-
-
 
 
