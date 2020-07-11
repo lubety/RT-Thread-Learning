@@ -15,15 +15,40 @@ static rt_thread_t led2_thread = RT_NULL;
 static void led2_thread_entry(void* parameter);
 
 //KEY任务创建
+#if 0
 static rt_thread_t key_thread = RT_NULL;
 static void key_thread_entry(void* parameter);
+#endif
 
 //消息队列数据结构创建
+#if 0
 static rt_mq_t test_mq = RT_NULL;
 static rt_thread_t receive_thread = RT_NULL;
 static rt_thread_t send_thread = RT_NULL;
 static void receive_thread_entry(void *parameter);
 static void send_thread_entry(void *parameter);
+#endif
+
+
+//信号量实验数据结构定义
+#if 0
+static rt_sem_t test_sem = RT_NULL;
+uint8_t ucValue[2] = {0x00, 0x00};
+static rt_thread_t sem_send_thread = RT_NULL;
+static rt_thread_t sem_recv_thread = RT_NULL;
+static void sem_recv_entry(void *parameter);
+static void sem_send_entry(void *parameter);
+#endif
+
+//互斥量实验
+static rt_mutex_t test_mutex = RT_NULL;
+uint8_t uvMutexValue[2];
+static rt_thread_t mutex_send_thread = RT_NULL;
+static rt_thread_t mutex_recv_thread = RT_NULL;
+static void mutex_recv_entry(void *parameter);
+static void mutex_send_entry(void *parameter);
+
+
 
 
 int main(void)
@@ -65,7 +90,8 @@ int main(void)
 #endif
 	
 	
-	//消息队列实验
+//消息队列实验
+#if 0	
 	test_mq = rt_mq_create("test_mq",
 							40,
 							20,
@@ -95,7 +121,69 @@ int main(void)
 		rt_thread_startup(send_thread);
 	else
 		return -1;
+#endif
+
+//信号量实验
+#if 0
+	test_sem = rt_sem_create("test_sem",
+							5,
+							RT_IPC_FLAG_FIFO);
+	if(test_sem != RT_NULL)
+		rt_kprintf("信号量创建成功!\n\n");
 	
+	sem_recv_thread = 
+	rt_thread_create("sem_receive",
+					sem_recv_entry,
+					RT_NULL,
+					512,
+					3,
+					20);
+	if(sem_recv_thread != RT_NULL)
+		rt_thread_startup(sem_recv_thread);
+	else
+		return -1;
+	
+	sem_send_thread = 
+	rt_thread_create("sem_send",
+					sem_send_entry,
+					RT_NULL,
+					512,
+					2,
+					20);
+	if(sem_send_thread != RT_NULL)
+		rt_thread_startup(sem_send_thread);
+	else
+		return -1;	
+#endif
+
+	test_mutex = 
+	rt_mutex_create("test_mutex", RT_IPC_FLAG_PRIO);
+	if(test_mutex != RT_NULL)
+		rt_kprintf("创建互斥量成功！\n\n");
+	
+	mutex_send_thread =
+	rt_thread_create("mutex_send_thread",
+					mutex_send_entry,
+					RT_NULL,
+					512,
+					2,
+					20);
+	if(mutex_send_thread != RT_NULL)
+		rt_thread_startup(mutex_send_thread);
+	else
+		return -1;
+	
+	mutex_recv_thread = 
+	rt_thread_create("mutex_recv_thread",
+					mutex_recv_entry,
+					RT_NULL,
+					512,
+					3,
+					20);
+	if(mutex_recv_thread != RT_NULL)
+		rt_thread_startup(mutex_recv_thread);
+	else
+		return -1;
 					
 	return 0;
 }
@@ -152,7 +240,7 @@ u8 KEY_Scan(void)
 	return keyValue;
 }
 
-
+#if 0
 static void key_thread_entry(void* parameter)
 {
 	rt_uint32_t key = 0, ret = 0, keyBak = 0;
@@ -207,9 +295,9 @@ static void key_thread_entry(void* parameter)
 	}	
 }	
 
+#endif
 
-
-
+#if 0
 static void receive_thread_entry(void *parameter)
 {
 	rt_err_t uwRet = RT_EOK;
@@ -267,3 +355,124 @@ static void send_thread_entry(void *parameter)
 	}
 }
 
+#endif
+
+#if 0
+static void sem_send_entry(void *parameter)
+{
+	rt_err_t uwRet = RT_EOK;
+	uint32_t key = 0;
+	uint32_t keyBak = 0;
+	
+	while(1)
+	{
+		#if 0
+		rt_sem_take(test_sem, RT_WAITING_FOREVER);
+		ucValue[0]++;
+		rt_thread_delay(100);
+		ucValue[1]++;
+		rt_sem_release(test_sem);
+		rt_thread_yield();
+		#endif
+		
+		
+		rt_thread_delay(10);
+		
+		key=KEY_Scan();	//得到键值
+		if(keyBak != key)
+		{
+			keyBak = key;			
+			switch(key)
+			{				 
+				case KEY1_PRES:
+					if(test_sem->value < 5)
+					{
+						uwRet = rt_sem_release(test_sem);
+						if(uwRet == RT_EOK)
+							rt_kprintf("KEY1被按下：释放一个车位，当前车位数：%d\n", test_sem->value);
+						else
+							rt_kprintf("KEY1被按下：但已无停车位可释放！\n");
+					}
+					else
+					{
+						rt_kprintf("KEY1被按下：但已无停车位可释放！\n");
+					}
+					break;
+				default:
+					break;
+			}
+		}
+	}
+}
+
+
+static void sem_recv_entry(void *parameter)
+{
+	rt_err_t uwRet = RT_EOK;
+	uint32_t key = 0;
+	uint32_t keyBak = 0;
+	
+	while(1)
+	{
+		#if 0
+		rt_sem_take(test_sem, RT_WAITING_FOREVER);
+		if(ucValue[0] == ucValue[1])
+			rt_kprintf("Successful!\n");
+		else
+			rt_kprintf("Failed.\n");
+		rt_sem_release(test_sem);
+		rt_thread_delay(1000);
+		#endif
+		
+		rt_thread_delay(10);
+		
+		key=KEY_Scan();	//得到键值
+		if(keyBak != key)
+		{
+			keyBak = key;			
+			switch(key)
+			{				 
+				case KEY0_PRES:
+					uwRet = rt_sem_take(test_sem, 0);
+					if(uwRet == RT_EOK)
+						rt_kprintf("KEY0被按下：成功申请到一个车位，剩余车位数%d.\n", test_sem->value);
+					else
+						rt_kprintf("KEY0被按下：不好意思，现在停车位已满！\n");
+					break;
+				default:
+					break;
+			}
+		}
+		
+	}
+}
+#endif
+
+
+static void mutex_send_entry(void *parameter)
+{
+	while(1)
+	{
+		rt_mutex_take(test_mutex, RT_WAITING_FOREVER);
+		uvMutexValue[0]++;
+		rt_thread_delay(100);
+		uvMutexValue[1]++;
+		rt_mutex_release(test_mutex);
+		rt_thread_yield();
+	}
+}
+
+
+static void mutex_recv_entry(void *parameter)
+{
+	while(1)
+	{
+		rt_mutex_take(test_mutex, RT_WAITING_FOREVER);
+		if(uvMutexValue[0] == uvMutexValue[1])
+			rt_kprintf("Successful!\n");
+		else
+			rt_kprintf("Failed.\n");
+		rt_mutex_release(test_mutex);
+		rt_thread_delay(1000);
+	}
+}
