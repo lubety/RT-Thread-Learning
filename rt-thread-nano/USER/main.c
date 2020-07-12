@@ -41,13 +41,28 @@ static void sem_send_entry(void *parameter);
 #endif
 
 //互斥量实验
+//#define MUTEX_TEST_EXAM
+#ifdef MUTEX_TEST_EXAM
 static rt_mutex_t test_mutex = RT_NULL;
 uint8_t uvMutexValue[2];
 static rt_thread_t mutex_send_thread = RT_NULL;
 static rt_thread_t mutex_recv_thread = RT_NULL;
 static void mutex_recv_entry(void *parameter);
 static void mutex_send_entry(void *parameter);
+#endif
 
+#define EVENT_FLAG_EXAM
+#ifdef EVENT_FLAG_EXAM
+static rt_event_t event_test = RT_NULL;
+static rt_thread_t event_send_thread = RT_NULL;
+static rt_thread_t event_recv_thread = RT_NULL;
+static void event_recv_entry(void *parameter);
+static void event_send_entry(void *parameter);
+
+#define KEY1_EVENT		(0x01 << 0)
+#define KEY2_EVENT		(0x01 << 1)
+
+#endif
 
 
 
@@ -155,7 +170,7 @@ int main(void)
 	else
 		return -1;	
 #endif
-
+#ifdef MUTEX_TEST_EXAM
 	test_mutex = 
 	rt_mutex_create("test_mutex", RT_IPC_FLAG_PRIO);
 	if(test_mutex != RT_NULL)
@@ -184,7 +199,41 @@ int main(void)
 		rt_thread_startup(mutex_recv_thread);
 	else
 		return -1;
-					
+#endif
+
+	
+#ifdef EVENT_FLAG_EXAM
+	event_test = 
+	rt_event_create("event_test", RT_IPC_FLAG_PRIO);
+	if(event_test != RT_NULL)
+		rt_kprintf("事件创建成功！\n\n");
+	
+	event_recv_thread = 
+	rt_thread_create("event_recv_thread",
+					event_recv_entry,
+					RT_NULL,
+					512,
+					3,
+					20);
+	if(event_recv_thread != RT_NULL)
+		rt_thread_startup(event_recv_thread);
+	else
+		return -1;
+	
+	event_send_thread = 
+	rt_thread_create("event_send_thread",
+					event_send_entry,
+					RT_NULL,
+					512,
+					2,
+					20);
+	if(event_send_thread != RT_NULL)
+		rt_thread_startup(event_send_thread);
+	else
+		return -1;
+	
+#endif
+	
 	return 0;
 }
 
@@ -448,7 +497,7 @@ static void sem_recv_entry(void *parameter)
 }
 #endif
 
-
+#ifdef MUTEX_TEST_EXAM
 static void mutex_send_entry(void *parameter)
 {
 	while(1)
@@ -476,3 +525,57 @@ static void mutex_recv_entry(void *parameter)
 		rt_thread_delay(1000);
 	}
 }
+#endif
+
+
+
+#ifdef EVENT_FLAG_EXAM
+static void event_recv_entry(void *parameter)
+{
+	rt_uint32_t recved;
+	
+	while(1)
+	{
+		rt_event_recv(event_test,
+						KEY1_EVENT|KEY2_EVENT,
+						RT_EVENT_FLAG_AND | RT_EVENT_FLAG_CLEAR,
+						RT_WAITING_FOREVER,
+						&recved);
+		if(recved == (KEY1_EVENT|KEY2_EVENT))
+			rt_kprintf("Key1与Key2都按下！\n");
+		else
+			rt_kprintf("事件错误！\n");
+	}
+}
+
+static void event_send_entry(void *parameter)
+{
+	uint32_t key = 0;
+	uint32_t keyBak = 0;
+	
+	while(1)
+	{
+		rt_thread_delay(10);
+		
+		key=KEY_Scan();	//得到键值
+		if(keyBak != key)
+		{
+			keyBak = key;			
+			switch(key)
+			{				 
+				case KEY1_PRES:
+					rt_event_send(event_test, KEY1_EVENT);
+					break;
+				case KEY2_PRES:
+					rt_event_send(event_test, KEY2_EVENT);
+					break;
+				default:
+					break;
+			}
+		}
+		
+	}
+}
+
+
+#endif
