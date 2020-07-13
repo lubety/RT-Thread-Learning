@@ -51,7 +51,7 @@ static void mutex_recv_entry(void *parameter);
 static void mutex_send_entry(void *parameter);
 #endif
 
-#define EVENT_FLAG_EXAM
+//#define EVENT_FLAG_EXAM
 #ifdef EVENT_FLAG_EXAM
 static rt_event_t event_test = RT_NULL;
 static rt_thread_t event_send_thread = RT_NULL;
@@ -63,6 +63,20 @@ static void event_send_entry(void *parameter);
 #define KEY2_EVENT		(0x01 << 1)
 
 #endif
+
+#define SW_TIMER
+#ifdef SW_TIMER
+
+static rt_timer_t sw_timer1 = RT_NULL;
+static rt_timer_t sw_timer2 = RT_NULL;
+static uint32_t TmrCb_Count1 = 0;
+static uint32_t TmrCb_Count2 = 0;
+
+static void swtmr1_callback(void *parameter);
+static void swtmr2_callback(void *parameter);
+
+#endif
+
 
 
 
@@ -232,6 +246,27 @@ int main(void)
 	else
 		return -1;
 	
+#endif
+
+#ifdef SW_TIMER
+	sw_timer1 = 
+	rt_timer_create("swtmr1_callback",
+					swtmr1_callback,
+					0,
+					5000,
+					RT_TIMER_FLAG_ONE_SHOT | RT_TIMER_FLAG_SOFT_TIMER);
+	if(sw_timer1 != RT_NULL)
+		rt_timer_start(sw_timer1);
+	
+	sw_timer2 = 
+	rt_timer_create("swtmr2_callback",
+					swtmr2_callback,
+					0,
+					1000,
+					RT_TIMER_FLAG_PERIODIC | RT_TIMER_FLAG_SOFT_TIMER);
+	if(sw_timer2 != RT_NULL)
+		rt_timer_start(sw_timer2);
+
 #endif
 	
 	return 0;
@@ -560,21 +595,40 @@ static void event_send_entry(void *parameter)
 		key=KEY_Scan();	//得到键值
 		if(keyBak != key)
 		{
-			keyBak = key;			
-			switch(key)
-			{				 
-				case KEY1_PRES:
-					rt_event_send(event_test, KEY1_EVENT);
-					break;
-				case KEY2_PRES:
-					rt_event_send(event_test, KEY2_EVENT);
-					break;
-				default:
-					break;
-			}
+			keyBak = key;	
+			if((key&KEY1_PRES) == KEY1_PRES)
+				rt_event_send(event_test, KEY1_EVENT);
+			if((key&KEY2_PRES) == KEY2_PRES)
+				rt_event_send(event_test, KEY2_EVENT);
 		}
 		
 	}
+}
+
+
+#endif
+
+#ifdef SW_TIMER
+static void swtmr1_callback(void *parameter)
+{
+	uint32_t tick_num1;
+	
+	TmrCb_Count1++;
+	
+	tick_num1 = (uint32_t)rt_tick_get();
+	rt_kprintf("swtmr1_callback函数执行 %d 次\n", TmrCb_Count1);
+	rt_kprintf("滴答定时器的数值 = %d.\n", tick_num1);
+}
+
+static void swtmr2_callback(void *parameter)
+{
+	uint32_t tick_num2;
+	
+	TmrCb_Count2++;
+	
+	tick_num2 = (uint32_t)rt_tick_get();
+	rt_kprintf("swtmr1_callback函数执行 %d 次\n", TmrCb_Count2);
+	rt_kprintf("滴答定时器的数值 = %d.\n", tick_num2);
 }
 
 
