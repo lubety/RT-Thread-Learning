@@ -64,7 +64,7 @@ static void event_send_entry(void *parameter);
 
 #endif
 
-#define SW_TIMER
+//#define SW_TIMER
 #ifdef SW_TIMER
 
 static rt_timer_t sw_timer1 = RT_NULL;
@@ -74,6 +74,20 @@ static uint32_t TmrCb_Count2 = 0;
 
 static void swtmr1_callback(void *parameter);
 static void swtmr2_callback(void *parameter);
+
+#endif
+
+#define MAIL_BOX
+#ifdef MAIL_BOX
+static rt_mailbox_t mailBox_test = RT_NULL;
+static rt_thread_t mailBoax_receive_thread = RT_NULL;
+static rt_thread_t mailBox_send_thread = RT_NULL;
+
+static void mailBox_receive_thread_entry(void *parameter);
+static void mailBox_send_thread_entry(void *parameter);
+
+static char test_str1[] = "This is a mail test 1";
+static char test_str2[] = "This is a mail test 2";
 
 #endif
 
@@ -268,6 +282,41 @@ int main(void)
 		rt_timer_start(sw_timer2);
 
 #endif
+
+
+#ifdef MAIL_BOX
+	mailBox_test = 
+	rt_mb_create("test_mailBox",
+				10,
+				RT_IPC_FLAG_FIFO);
+	if(mailBox_test != RT_NULL)
+		rt_kprintf("邮箱创建成功!\n\n");
+	
+	mailBoax_receive_thread = 
+	rt_thread_create("mailBox_thread_recv",
+					mailBox_receive_thread_entry,
+					RT_NULL,
+					512,
+					4,
+					20);
+	if(mailBoax_receive_thread != RT_NULL)
+		rt_thread_startup(mailBoax_receive_thread);
+	else
+		return -1;
+	
+	mailBox_send_thread = 
+	rt_thread_create("mailBox_thread_send",
+					mailBox_send_thread_entry,
+					RT_NULL,
+					512,
+					3,
+					20);
+	if(mailBox_send_thread != RT_NULL)
+		rt_thread_startup(mailBox_send_thread);
+	else
+		return -1;
+	
+#endif	
 	
 	return 0;
 }
@@ -633,3 +682,68 @@ static void swtmr2_callback(void *parameter)
 
 
 #endif
+
+
+#ifdef MAIL_BOX
+static void mailBox_receive_thread_entry(void *parameter)
+{
+	rt_err_t uwRet = RT_EOK;
+	char *r_str;
+	
+	while(1)
+	{
+		uwRet = rt_mb_recv(mailBox_test, (rt_uint32_t *)&r_str, RT_WAITING_FOREVER);
+		if(uwRet == RT_EOK)
+		{
+			rt_kprintf("邮箱接收的内容是：%s.\n\n", r_str);
+		}
+		else
+		{
+			rt_kprintf("邮箱接收错误，错误码是%d.\n", uwRet);
+		}
+	}
+}
+
+static void mailBox_send_thread_entry(void *parameter)
+{
+	rt_err_t uwRet = RT_EOK;
+	
+	uint32_t key = 0;
+	uint32_t keyBak = 0;
+	
+	while(1)
+	{
+		rt_thread_delay(10);
+		
+		key=KEY_Scan();	//得到键值
+		if(keyBak != key)
+		{
+			keyBak = key;	
+			if((key&KEY1_PRES) == KEY1_PRES)
+			{
+				rt_kprintf("KEY1被单击\n");
+				uwRet = rt_mb_send(mailBox_test, (rt_uint32_t)&test_str1);
+				if(uwRet == RT_EOK)
+					rt_kprintf("邮件发送成功!\n");
+				else
+					rt_kprintf("邮件发送失败!\n");
+			}
+			if((key&KEY2_PRES) == KEY2_PRES)
+			{
+				rt_kprintf("KEY2被单击\n");
+				uwRet = rt_mb_send(mailBox_test, (rt_uint32_t)&test_str2);
+				if(uwRet == RT_EOK)
+					rt_kprintf("邮件发送成功!\n");
+				else
+					rt_kprintf("邮件发送失败!\n");
+			}
+		}
+		
+	}
+
+
+}
+
+
+#endif
+
